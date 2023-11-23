@@ -293,7 +293,7 @@ class MarkdownGenerator:
             self.logger.error("Not valid key value pair, when writing padded line.")
             return
 
-    def addHeader(self, level: int, text):
+    def addHeader(self, level: int, text, header_char: str = HEADER):
         """
         Standard Markdown
 
@@ -303,6 +303,7 @@ class MarkdownGenerator:
 
         :param level: The level of header, from 1 to 6
         :param text: The text for header
+        :param header_char: Character for header, by default '#'.
         """
         # NOTE Currently non-unique header names are not handled
 
@@ -323,19 +324,19 @@ class MarkdownGenerator:
             # Add empty line before header unless it's level is 1 (default MIN) and it's first header
             if level != MIN_HEADER_LEVEL or self.header_index != 1:
                 self.writeTextLine()
-            self.writeTextLine(f"{level * HEADER} {text}")
+            self.writeTextLine(f"{level * header_char} {text}")
         elif level < MIN_HEADER_LEVEL:
             self.logger.warning(
                 "Header level below minimum value, using minimum value."
             )
             header["headerLevel"] = MIN_HEADER_LEVEL
-            self.writeTextLine(f"{MIN_HEADER_LEVEL * HEADER} {text}")
+            self.writeTextLine(f"{MIN_HEADER_LEVEL * header_char} {text}")
         else:
             self.logger.warning("Header level out of scope, using max value.")
             header["headerLevel"] = MAX_HEADER_LEVEL
             # Add empty line before header unless it's level is 1 (default MIN)
             self.writeTextLine()
-            self.writeTextLine(f"{MAX_HEADER_LEVEL * HEADER} {text}")
+            self.writeTextLine(f"{MAX_HEADER_LEVEL * header_char} {text}")
 
         self.header_info.append(header)
         # self.logger.debug(f"Adding header {header}")
@@ -501,7 +502,7 @@ class MarkdownGenerator:
 
         :param text: Actual content/code into code block
         :param escape_html: Wheather the input is html escaped or not. Default is True
-        :param write: Wheather the output is written immediately or returned. 
+        :param write: Wheather the output is written immediately or returned.
         :return: If write is false, generated InlineCodeBlock is returned
         :rtype: string
         By default constructed output is returned only.
